@@ -1,3 +1,5 @@
+using Business.Repositories;
+using Business.Services;
 using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//add scoped
+
+builder.Services.AddScoped<IPostService, PostRepository>();
+
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
@@ -19,7 +27,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
+{ 
     app.UseSwagger();
     app.UseSwaggerUI();
 }

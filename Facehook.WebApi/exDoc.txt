@@ -1,0 +1,4 @@
+﻿errors doc:
+
+error 4000:
+her hansisa basqa bir error xetasi

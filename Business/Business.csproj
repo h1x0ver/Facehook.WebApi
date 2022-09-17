@@ -9,11 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\Entity\Entity.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
-    <Folder Include="Repositories\" />
+    <ProjectReference Include="..\Exception\Exceptions.csproj" />
   </ItemGroup>
 
 </Project>
