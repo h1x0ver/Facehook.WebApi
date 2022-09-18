@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Business\Business.csproj" />
-    <ProjectReference Include="..\DAL\DAL.csproj" />
+    <ProjectReference Include="..\Business\Facehook.Business.csproj" />
+    <ProjectReference Include="..\DAL\Facehook.DAL.csproj" />
   </ItemGroup>
 
 </Project>

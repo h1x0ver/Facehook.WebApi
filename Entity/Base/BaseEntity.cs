@@ -1,4 +1,4 @@
-﻿namespace Entity.Base;
+﻿namespace Facehook.Entity.Base;
 public class BaseEntity
 {
     public int Id { get; set; }

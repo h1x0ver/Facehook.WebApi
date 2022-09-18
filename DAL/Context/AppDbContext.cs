@@ -1,6 +1,6 @@
-﻿using Entity.Entites;
+﻿using Facehook.Entity.Entites;
 using Microsoft.EntityFrameworkCore;
-namespace DAL.Context;
+namespace Facehook.DAL.Context;
 public class AppDbContext : DbContext
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

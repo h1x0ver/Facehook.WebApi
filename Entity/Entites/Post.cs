@@ -1,6 +1,7 @@
-﻿using Entity.Base;
+﻿
+using Facehook.Entity.Base;
 
-namespace Entity.Entites;
+namespace Facehook.Entity.Entites;
 public class Post : BaseEntity, IEntity
 {
     public string? Title { get; set; }  

@@ -1,6 +1,5 @@
-﻿using Entity.Base;
-
-namespace Business.Base;
+﻿using Facehook.Entity.Base;
+namespace Facehook.Business.Base;
 public interface IBaseService<TEntity>
     where TEntity : class, IEntity, new()
 {

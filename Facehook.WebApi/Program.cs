@@ -1,6 +1,6 @@
-using Business.Repositories;
-using Business.Services;
-using DAL.Context;
+using Facehook.Business.Repositories;
+using Facehook.Business.Services;
+using Facehook.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

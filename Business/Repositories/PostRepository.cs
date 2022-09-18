@@ -1,10 +1,10 @@
-﻿using Business.Services;
-using DAL.Context;
-using Entity.Entites;
-using Exceptions.EntityExceptions;
+﻿using Facehook.Business.Services;
+using Facehook.DAL.Context;
+using Facehook.Entity.Entites;
+using Facehook.Exceptions.EntityExceptions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Business.Repositories;
+namespace Facehook.Business.Repositories;
 public class PostRepository : IPostService
 {
     private readonly AppDbContext _context;

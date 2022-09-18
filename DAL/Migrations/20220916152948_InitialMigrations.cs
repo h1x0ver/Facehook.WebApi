@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DAL.Migrations
+namespace Facehook.DAL.Migrations
 {
     public partial class InitialMigrations : Migration
     {

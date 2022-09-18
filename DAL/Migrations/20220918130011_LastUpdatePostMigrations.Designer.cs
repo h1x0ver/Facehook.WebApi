@@ -4,14 +4,15 @@ using Facehook.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Facehook.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220916152948_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20220918130011_LastUpdatePostMigrations")]
+    partial class LastUpdatePostMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,31 +47,16 @@ namespace Facehook.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("CommentCount")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("DislikeCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("LikeCount")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isSaved")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");

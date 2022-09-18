@@ -1,8 +1,9 @@
-﻿using Business.Base;
-using Entity.Entites;
+﻿
+using Facehook.Business.Base;
+using Facehook.Entity.Entites;
 
-namespace Business.Services;
-public interface IPostService : IBaseService<Post >
+namespace Facehook.Business.Services;
+public interface IPostService : IBaseService<Post>
 {
 
 }

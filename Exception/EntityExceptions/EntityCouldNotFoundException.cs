@@ -1,4 +1,4 @@
-﻿    namespace Exceptions.EntityExceptions;
+﻿namespace Facehook.Exceptions.EntityExceptions;
 public class EntityCouldNotFoundException : Exception
 {
     private const string message = "Entity could not found";

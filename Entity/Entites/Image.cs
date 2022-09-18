@@ -1,5 +1,6 @@
-﻿using Entity.Base;
-namespace Entity.Entites;
+﻿using Facehook.Entity.Base;
+
+namespace Facehook.Entity.Entites;
 public class Image : IEntity
 {
     public int Id { get; set; }

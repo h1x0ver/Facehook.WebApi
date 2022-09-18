@@ -1,4 +1,4 @@
-﻿namespace Entity.Entites;
+﻿namespace Facehook.Entity.Entites;
 public class PostImage
 {
     public int Id { get; set; }

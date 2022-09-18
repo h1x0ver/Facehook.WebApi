@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DAL\DAL.csproj" />
-    <ProjectReference Include="..\Entity\Entity.csproj" />
-    <ProjectReference Include="..\Exception\Exceptions.csproj" />
+    <ProjectReference Include="..\DAL\Facehook.DAL.csproj" />
+    <ProjectReference Include="..\Entity\Facehook.Entity.csproj" />
+    <ProjectReference Include="..\Exception\Facehook.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

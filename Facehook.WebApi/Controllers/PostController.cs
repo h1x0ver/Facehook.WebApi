@@ -1,5 +1,5 @@
-﻿using Business.Services;
-using Exceptions.EntityExceptions;
+﻿using Facehook.Business.Services;
+using Facehook.Exceptions.EntityExceptions;
 using Facehook.WebApi.Common;
 using Microsoft.AspNetCore.Mvc;
 namespace Facehook.WebApi.Controllers;
@@ -14,12 +14,15 @@ public class PostController : ControllerBase
     {
         _postService = postService;
     }
+
+    public IPostService PostService => _postService;
+
     [HttpGet]
     public async Task<IActionResult> Get()
     {
         try
         {
-            var data = await _postService.GetAll();
+            var data = await PostService.GetAll();
             return Ok(data);
 
         }
@@ -33,4 +36,6 @@ public class PostController : ControllerBase
         }
 
     }  
+
+
 }

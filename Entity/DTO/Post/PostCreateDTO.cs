@@ -1,4 +1,4 @@
-﻿namespace Entity.DTO.Post;
+﻿namespace Facehook.Entity.DTO.Post;
 public class PostCreateDTO
 {
     public string? Title { get; set; }
