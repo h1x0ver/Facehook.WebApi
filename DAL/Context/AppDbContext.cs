@@ -1,4 +1,5 @@
-﻿using Facehook.Entity.Entites;
+﻿using Facehook.Entity.Configurations;
+using Facehook.Entity.Entites;
 using Microsoft.EntityFrameworkCore;
 namespace Facehook.DAL.Context;
 public class AppDbContext : DbContext
@@ -9,4 +10,11 @@ public class AppDbContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<PostImage> PostImages{ get; set; }
+
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new PostConfigurations());
+        base.OnModelCreating(modelBuilder);
+    }
 }

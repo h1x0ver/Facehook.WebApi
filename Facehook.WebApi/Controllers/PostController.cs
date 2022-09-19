@@ -1,4 +1,6 @@
 ﻿using Facehook.Business.Services;
+using Facehook.Entity.DTO.Post;
+using Facehook.Entity.Entites;
 using Facehook.Exceptions.EntityExceptions;
 using Facehook.WebApi.Common;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +25,12 @@ public class PostController : ControllerBase
         try
         {
             var data = await PostService.GetAll();
-            return Ok(data);
+            List<PostGetDto> dtos = new List<PostGetDto>();
+            foreach (var item in data)
+            {
+                dtos.Add(MapGetDto(item));
+            }
+            return Ok(dtos);
 
         }
         catch (EntityCouldNotFoundException ex)
@@ -36,6 +43,15 @@ public class PostController : ControllerBase
         }
 
     }  
+
+    private PostGetDto MapGetDto(Post post)
+    {
+        var data = new PostGetDto();
+        data.Id = post.Id;
+        data.ImageName = post.PostImages?.FirstOrDefault()?.Image?.Name;
+        data.Title = post.Title;
+        return data;
+    }
 
 
 }

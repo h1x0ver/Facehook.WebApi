@@ -16,7 +16,7 @@ public class PostRepository : IPostService
 
     public async Task<Post> Get(int id)
     {
-        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted,"PostImages.Image");
+        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted, includes:"PostImages.Image");
 
         if (data is null)
         {
@@ -28,7 +28,7 @@ public class PostRepository : IPostService
 
     public async Task<List<Post>> GetAll()
     {
-        var data = await _postDal.GetAllAsync(n => !n.isDeleted, "PostImages.Image");
+        var data = await _postDal.GetAllAsync(n => !n.isDeleted, includes:"PostImages.Image");
 
         if (data is null)
         {

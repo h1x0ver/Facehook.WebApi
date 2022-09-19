@@ -18,12 +18,19 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         _context = context;
     }
 
-    public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression, params string[] includes)
+    public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, params string[] includes)
     {
         var query = expression == null ?
           _context.Set<TEntity>().AsNoTracking() :
           _context.Set<TEntity>().Where(expression).AsNoTracking();
 
+        
+        if (skip != null)
+        {
+            query.Skip((int)skip);
+        }
+
+        
         if (includes != null)
         {
             foreach (var item in includes)
@@ -39,11 +46,21 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
 #pragma warning restore CS8603 // Possible null reference return.
     }
 
-    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, params string[] includes)
+    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, int? take = int.MaxValue, params string[] includes)
     {
         var query = expression == null ?
             _context.Set<TEntity>().AsNoTracking() :
             _context.Set<TEntity>().Where(expression).AsNoTracking();
+
+        if (skip != null)
+        {
+            query.Skip((int)skip);
+        }
+
+        if (take != null)
+        {
+            query.Take((int)take);
+        }
 
         if (includes != null)
         {
