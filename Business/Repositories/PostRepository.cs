@@ -1,4 +1,5 @@
 ﻿using Facehook.Business.Services;
+using Facehook.DAL.Abstracts;
 using Facehook.DAL.Context;
 using Facehook.Entity.Entites;
 using Facehook.Exceptions.EntityExceptions;
@@ -7,16 +8,15 @@ using Microsoft.EntityFrameworkCore;
 namespace Facehook.Business.Repositories;
 public class PostRepository : IPostService
 {
-    private readonly AppDbContext _context;
-
-    public PostRepository(AppDbContext context)
+    private readonly IPostDal _postDal;
+    public PostRepository(IPostDal postDal)
     {
-        _context = context;
+        _postDal = postDal;
     }
 
     public async Task<Post> Get(int id)
     {
-        var data = await _context.Posts.Where(n => n.Id == id && !n.isDeleted).FirstOrDefaultAsync();
+        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted,"PostImages.Image");
 
         if (data is null)
         {
@@ -28,7 +28,7 @@ public class PostRepository : IPostService
 
     public async Task<List<Post>> GetAll()
     {
-        var data = await _context.Posts.Where(n => !n.isDeleted).ToListAsync();
+        var data = await _postDal.GetAllAsync(n => !n.isDeleted, "PostImages.Image");
 
         if (data is null)
         {

@@ -2,3 +2,22 @@
 
 error 4000:
 her hansisa basqa bir error xetasi
+
+error 4001: {
+	data dont by find;;;;;
+}
+
+error 4002: {
+	id is null
+}
+
+error 4003: {
+	run time error
+}
+error 4004: {
+	compile time error
+}
+
+
+error ... : {
+}

@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Facehook.Core.EFRepository;
+
+//this class is fundament core project
+
 public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<TEntity>
     where TEntity : class, IEntity, new()
     where TContext : DbContext
@@ -15,22 +18,42 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         _context = context;
     }
 
-    public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression)
+    public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression, params string[] includes)
     {
-        var data = expression == null ?
-            await _context.Set<TEntity>().FirstOrDefaultAsync() :
-            await _context.Set<TEntity>().Where(expression).FirstOrDefaultAsync();
+        var query = expression == null ?
+          _context.Set<TEntity>().AsNoTracking() :
+          _context.Set<TEntity>().Where(expression).AsNoTracking();
+
+        if (includes != null)
+        {
+            foreach (var item in includes)
+            {
+                query = query.Include(item);
+            }
+        }
+
+        var data = await query.FirstOrDefaultAsync();
 
 #pragma warning disable CS8603 // Possible null reference return.
         return data;
 #pragma warning restore CS8603 // Possible null reference return.
     }
 
-    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression)
+    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, params string[] includes)
     {
-        var data = expression == null ?
-            await _context.Set<TEntity>().ToListAsync() :
-            await _context.Set<TEntity>().Where(expression).ToListAsync();
+        var query = expression == null ?
+            _context.Set<TEntity>().AsNoTracking() :
+            _context.Set<TEntity>().Where(expression).AsNoTracking();
+
+        if (includes != null)
+        {
+            foreach (var item in includes)
+            {
+                query = query.Include(item);
+            }
+        }
+
+        var data = await query.ToListAsync();
 
         return data;
     }
@@ -41,13 +64,17 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         await _context.SaveChangesAsync();
     }
 
-    public Task UpdateAsync(TEntity entity)
+    public async Task UpdateAsync(TEntity entity)
     {
-        throw new NotImplementedException();
+        var entry = _context.Entry(entity);
+        entry.State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 
-    public Task DeleteAsync(TEntity entity)
+    public async Task DeleteAsync(TEntity entity)
     {
-        throw new NotImplementedException();
+        var entry = _context.Entry(entity);
+        entry.State = EntityState.Deleted;
+        await _context.SaveChangesAsync();
     }
 }

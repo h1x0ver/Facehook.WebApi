@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Facehook.Core.csproj" />
     <ProjectReference Include="..\Entity\Facehook.Entity.csproj" />
   </ItemGroup>
 
