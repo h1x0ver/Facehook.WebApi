@@ -1,4 +1,5 @@
-﻿using Facehook.Business.Services;
+﻿using AutoMapper;
+using Facehook.Business.Services;
 using Facehook.Entity.DTO.Post;
 using Facehook.Entity.Entites;
 using Facehook.Exceptions.EntityExceptions;
@@ -11,27 +12,20 @@ namespace Facehook.WebApi.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
+    private readonly IMapper _mapper;
 
-    public PostController(IPostService postService)
+    public PostController(IPostService postService, IMapper mapper)
     {
         _postService = postService;
+        _mapper = mapper;
     }
-
-    public IPostService PostService => _postService;
-
     [HttpGet]
     public async Task<IActionResult> Get()
     {
         try
         {
-            var data = await PostService.GetAll();
-            List<PostGetDto> dtos = new List<PostGetDto>();
-            foreach (var item in data)
-            {
-                dtos.Add(MapGetDto(item));
-            }
-            return Ok(dtos);
-
+            var data = await _postService.GetAll();
+            return Ok(data);
         }
         catch (EntityCouldNotFoundException ex)
         {
@@ -41,17 +35,63 @@ public class PostController : ControllerBase
         {
             return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
         }
-
-    }  
-
-    private PostGetDto MapGetDto(Post post)
-    {
-        var data = new PostGetDto();
-        data.Id = post.Id;
-        data.ImageName = post.PostImages?.FirstOrDefault()?.Image?.Name;
-        data.Title = post.Title;
-        return data;
     }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        try
+        {
+            var data =  await _postService.Get(id);
+            return Ok(data);
+        }
+        catch (EntityCouldNotFoundException ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4222, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
+        }
+    }
+    [HttpPost("create") ]
+    public async Task<IActionResult> CreateAsync([FromForm] PostCreateDTO entity)
+    {
+        try
+        {
+            await _postService.Create(entity);
+            return NoContent();
+        }
+        catch (EntityCouldNotFoundException ex)
+        {
 
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4991, ex.Message));
+
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
+        }
+    }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, PostUpdateDTO entity)
+    {
+        try
+        {
+
+            await _postService.Update(id, entity);
+            return NoContent();
+
+        }
+        catch (EntityCouldNotFoundException ex)
+        {
+
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4991, ex.Message));
+
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
+        }
+    }
 
 }

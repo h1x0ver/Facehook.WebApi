@@ -1,8 +1,10 @@
 ﻿using Facehook.Entity.Configurations;
 using Facehook.Entity.Entites;
+using Facehook.Entity.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace Facehook.DAL.Context;
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<AppUser>
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
@@ -10,11 +12,20 @@ public class AppDbContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<PostImage> PostImages{ get; set; }
+    public DbSet<Like> Likes { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Story> Stories { get; set; }
+    public DbSet<SavePost> SavePosts{ get; set; }
 
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        modelBuilder.ApplyConfiguration(new PostConfigurations());
-        base.OnModelCreating(modelBuilder);
+        builder.ApplyConfiguration(new PostConfigurations());
+        builder.ApplyConfiguration(new StoryConfigration());
+        builder.ApplyConfiguration(new CommentConfiguration());
+        builder.ApplyConfiguration(new SavePostConfiguration());
+        builder.ApplyConfiguration(new LikeConfiguration());
+        base.OnModelCreating(builder);
     }
 }

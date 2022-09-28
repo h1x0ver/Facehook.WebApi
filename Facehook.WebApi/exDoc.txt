@@ -1,23 +1,33 @@
 ﻿errors doc:
 
-error 4000:
-her hansisa basqa bir error xetasi
-
-error 4001: {
-	data dont by find;;;;;
+error 4000: {
+	general error
 }
 
-error 4002: {
-	id is null
+error 4010 : {
+	identityError Result is dont success
 }
 
-error 4003: {
-	run time error
-}
-error 4004: {
-	compile time error
+error 4005 : {
+	email does not exist retarded!!!
 }
 
+/api/auth/login     |     username && pasword     |     token           | user login 
+/api/posts      |  users post  
+/api/story   || user story
 
-error ... : {
-}
+
+
+
+
+posts 
+
+api/posts -> all post 
+
+api/posts/4 -> 4 idli post 
+
+
+story
+
+api/story/user:id -> story by id
+

@@ -1,11 +1,10 @@
 ﻿using Facehook.Entity.Base;
 namespace Facehook.Business.Base;
-public interface IBaseService<TEntity>
-    where TEntity : class, IEntity, new()
+public interface IBaseService<TGet, TCreate, TUpdate>
 {
-    Task<TEntity> Get(int id);
-    Task <List<TEntity>> GetAll();
-    Task Create(TEntity entity);
-    Task<TEntity> Update(int id,TEntity entity);
+    Task<TGet> Get(int id);
+    Task<List<TGet>> GetAll();
+    Task Create(TCreate entity);
+    Task Update(int id, TUpdate entity);
     Task Delete(int id);
 }

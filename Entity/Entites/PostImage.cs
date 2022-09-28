@@ -1,5 +1,7 @@
-﻿namespace Facehook.Entity.Entites;
-public class PostImage
+﻿using Facehook.Entity.Base;
+
+namespace Facehook.Entity.Entites;
+public class PostImage : IEntity
 {
     public int Id { get; set; }
     public int ImageId { get; set; }

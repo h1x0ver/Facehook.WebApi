@@ -1,4 +1,2 @@
 ﻿namespace Facehook.Entity.Base;
-public interface IEntity
-{
-}
+public interface IEntity { }

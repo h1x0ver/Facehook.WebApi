@@ -40,10 +40,9 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         }
 
         var data = await query.FirstOrDefaultAsync();
+        if (data is null) throw new Exception();
 
-#pragma warning disable CS8603 // Possible null reference return.
         return data;
-#pragma warning restore CS8603 // Possible null reference return.
     }
 
     public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, int? take = int.MaxValue, params string[] includes)
@@ -94,4 +93,6 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         entry.State = EntityState.Deleted;
         await _context.SaveChangesAsync();
     }
+
+
 }
