@@ -1,0 +1,32 @@
+﻿using Facehook.Business.Services;
+using Facehook.Entity.Entites;
+
+namespace Facehook.Business.Repositories;
+
+public class SavePostRepository : ISavePostService
+{
+    public Task Create(SavePost entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Delete(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<SavePost> Get(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<SavePost>> GetAll()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Update(int id, SavePost entity)
+    {
+        throw new NotImplementedException();
+    }
+}

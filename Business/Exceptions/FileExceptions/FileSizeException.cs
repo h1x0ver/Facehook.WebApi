@@ -1,6 +1,6 @@
-﻿using Aniverse.Business.Exceptions.FileExceptions;
+﻿using Facehook.Business.Exceptions.FileExceptions;
 
-namespace Aniverse.Business.Exceptions.FileExceptions
+namespace Facehook.Business.Exceptions.FileExceptions
 {
     public class FileSizeException : FileException
     {

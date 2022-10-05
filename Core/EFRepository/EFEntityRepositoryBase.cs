@@ -17,12 +17,11 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
     {
         _context = context;
     }
-
     public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, params string[] includes)
     {
         var query = expression == null ?
-          _context.Set<TEntity>().AsNoTracking() :
-          _context.Set<TEntity>().Where(expression).AsNoTracking();
+          _context.Set<TEntity>() :
+          _context.Set<TEntity>().Where(expression);
 
         
         if (skip != null)
@@ -44,7 +43,6 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
 
         return data;
     }
-
     public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, int? take = int.MaxValue, params string[] includes)
     {
         var query = expression == null ?
@@ -79,19 +77,21 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         entry.State = EntityState.Added;
         await _context.SaveChangesAsync();
     }
-
     public async Task UpdateAsync(TEntity entity)
     {
         var entry = _context.Entry(entity);
         entry.State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
-
     public async Task DeleteAsync(TEntity entity)
     {
         var entry = _context.Entry(entity);
         entry.State = EntityState.Deleted;
         await _context.SaveChangesAsync();
+    }
+    public async Task SaveAsync()
+    {
+       await _context.SaveChangesAsync();
     }
 
 

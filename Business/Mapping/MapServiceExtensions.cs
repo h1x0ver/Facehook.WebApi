@@ -7,7 +7,7 @@ public static class MapServiceExtensions
 {
     public static void AddMapperService(this IServiceCollection services)
     {
-        services.AddScoped(provider => new MapperConfiguration(mc =>
+        services.AddScoped(provfider => new MapperConfiguration(mc =>
         {
             mc.AddProfile(new Mapper());
         }).CreateMapper());

@@ -28,13 +28,14 @@ builder.Services.AddControllers()
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
-                      builder =>
-                      {
-                          builder.WithOrigins("http://localhost:3000")
-                                                .AllowAnyHeader()
-                                                .AllowAnyMethod()
-                                                .AllowCredentials();
-                      });
+                                                                            builder =>
+                                                                            {
+                                                                                builder.WithOrigins("http://localhost:3000")
+                                                                                                      .AllowAnyHeader()
+                           //gulle atmisame ona gore ora gedibdi bu IIUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+                                                                                                      .AllowAnyMethod()
+                                                                                                      .AllowCredentials();
+                                                                            });
 });
 builder.Services.AddEndpointsApiExplorer();
 //swagger
@@ -69,7 +70,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration.GetSection("JWT:issuer").Value,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWT:secretKey").Value))
 
-    };    
+    };
 });
 
 
@@ -77,11 +78,34 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddMapperService();
 
 
-//add scoped
+//add scoped:
+//2 add scoped for 1 entity auye. bir az seryoznu ol.
 
+
+//post
 builder.Services.AddScoped<IPostService, PostRepository>();
 builder.Services.AddScoped<IPostDal, PostRepositoryDal>();
 
+//savePost
+builder.Services.AddScoped<ISavePostService, SavePostRepository>();
+builder.Services.AddScoped<ISavePostDal, SavePostRepositoryDal>();
+
+//user
+builder.Services.AddScoped<IUserService, UserRepository>();
+builder.Services.AddScoped<IUserDal, UserRepositoryDal>();
+
+//User-Friend
+builder.Services.AddScoped<IUserFriendService, UserFriendRepository>();
+builder.Services.AddScoped<IUserFriendDal, UserFriendRepositoryDal>();    
+
+//image
+builder.Services.AddScoped<IImageService, ImageRepository>();
+builder.Services.AddScoped<IImageDal, ImageRepositoryDal>();
+
+
+//story
+builder.Services.AddScoped<IStoryService, StoryRepository>();
+builder.Services.AddScoped<IStoryDal, StoryRepositoryDal>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

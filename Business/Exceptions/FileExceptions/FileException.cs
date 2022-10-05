@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Aniverse.Business.Exceptions.FileExceptions
+namespace Facehook.Business.Exceptions.FileExceptions
 {
     public class FileException : Exception
     {

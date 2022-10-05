@@ -10,4 +10,5 @@ public interface IEntityRepositoryBase<TEntity>
     Task CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);
     Task DeleteAsync(TEntity entity);
+    Task SaveAsync();
 }

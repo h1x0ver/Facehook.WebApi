@@ -1,4 +1,4 @@
-﻿namespace Aniverse.Business.Exceptions.FileExceptions
+﻿namespace Facehook.Business.Exceptions.FileExceptions
 {
     public class FileTypeException : FileException
     {

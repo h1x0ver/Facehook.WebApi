@@ -4,8 +4,12 @@ error 4000: {
 	general error
 }
 
+error 4100 {
+	=/a bir error sebebi.
+}
+
 error 4010 : {
-	identityError Result is dont success
+	identityError Result is dont success.
 }
 
 error 4005 : {
@@ -13,8 +17,8 @@ error 4005 : {
 }
 
 /api/auth/login     |     username && pasword     |     token           | user login 
-/api/posts      |  users post  
-/api/story   || user story
+/api/posts      |  users   |   post  
+/api/story   || user  |  story
 
 
 
@@ -30,4 +34,6 @@ api/posts/4 -> 4 idli post
 story
 
 api/story/user:id -> story by id
+
+
 

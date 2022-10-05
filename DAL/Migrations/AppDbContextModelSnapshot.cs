@@ -70,7 +70,17 @@ namespace Facehook.DAL.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StoryId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("StoryId");
 
                     b.ToTable("Images");
                 });
@@ -141,29 +151,6 @@ namespace Facehook.DAL.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("Facehook.Entity.Entites.PostImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("PostImages");
-                });
-
             modelBuilder.Entity("Facehook.Entity.Entites.SavePost", b =>
                 {
                     b.Property<int>("Id")
@@ -204,24 +191,18 @@ namespace Facehook.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<string>("StoryFileName")
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("isDeleted")
@@ -231,9 +212,38 @@ namespace Facehook.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Stories");
+                });
+
+            modelBuilder.Entity("Facehook.Entity.Entites.UserFriend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("FriendId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SenderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FriendId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFriends");
                 });
 
             modelBuilder.Entity("Facehook.Entity.Identity.AppUser", b =>
@@ -299,6 +309,9 @@ namespace Facehook.DAL.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ProfileImageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -318,6 +331,8 @@ namespace Facehook.DAL.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("ProfileImageId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -476,6 +491,21 @@ namespace Facehook.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Facehook.Entity.Entites.Image", b =>
+                {
+                    b.HasOne("Facehook.Entity.Entites.Post", "Post")
+                        .WithMany("Images")
+                        .HasForeignKey("PostId");
+
+                    b.HasOne("Facehook.Entity.Entites.Story", "Story")
+                        .WithMany("Images")
+                        .HasForeignKey("StoryId");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Story");
+                });
+
             modelBuilder.Entity("Facehook.Entity.Entites.Like", b =>
                 {
                     b.HasOne("Facehook.Entity.Identity.AppUser", "AppUser")
@@ -502,25 +532,6 @@ namespace Facehook.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Facehook.Entity.Entites.PostImage", b =>
-                {
-                    b.HasOne("Facehook.Entity.Entites.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Facehook.Entity.Entites.Post", "Post")
-                        .WithMany("PostImages")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Image");
-
-                    b.Navigation("Post");
-                });
-
             modelBuilder.Entity("Facehook.Entity.Entites.SavePost", b =>
                 {
                     b.HasOne("Facehook.Entity.Identity.AppUser", "AppUser")
@@ -542,9 +553,33 @@ namespace Facehook.DAL.Migrations
                 {
                     b.HasOne("Facehook.Entity.Identity.AppUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Facehook.Entity.Entites.UserFriend", b =>
+                {
+                    b.HasOne("Facehook.Entity.Identity.AppUser", "Friend")
+                        .WithMany()
+                        .HasForeignKey("FriendId");
+
+                    b.HasOne("Facehook.Entity.Identity.AppUser", "User")
+                        .WithMany("UserFriends")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Friend");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Facehook.Entity.Identity.AppUser", b =>
+                {
+                    b.HasOne("Facehook.Entity.Entites.Image", "ProfileImage")
+                        .WithMany()
+                        .HasForeignKey("ProfileImageId");
+
+                    b.Navigation("ProfileImage");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -607,9 +642,14 @@ namespace Facehook.DAL.Migrations
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("Likes");
+                    b.Navigation("Images");
 
-                    b.Navigation("PostImages");
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("Facehook.Entity.Entites.Story", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Facehook.Entity.Identity.AppUser", b =>
@@ -619,6 +659,8 @@ namespace Facehook.DAL.Migrations
                     b.Navigation("Posts");
 
                     b.Navigation("SavePosts");
+
+                    b.Navigation("UserFriends");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Aniverse.Business.Exceptions
+namespace Facehook.Business.Exceptions
 {
     public class NotFoundException : Exception
     {

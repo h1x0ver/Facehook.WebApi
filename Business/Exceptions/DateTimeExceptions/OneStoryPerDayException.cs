@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Aniverse.Business.Exceptions.DateTimeExceptions
+namespace Facehook.Business.Exceptions.DateTimeExceptions
 {
     public class OneStoryPerDayException : DateException
     {

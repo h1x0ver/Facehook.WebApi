@@ -11,7 +11,7 @@ using System.Text;
 //Bu Controllerin icinin dolu olmasi ve business layere cixartmamagimin sebebi:
 // Eyer ki men bunu business yare cixartsaydim men gerey bunu core layerde yazmali olcagdim, deriniye getsey iki dene databasem olacagdi buda mene indiki case de lazim deyl yeni bidene de controllerin ici dolu olsa nolarkiye, heyatdida zaur olmuyandada olmur nagayrag indi
 namespace Facehook.WebApi.Controllers;
-[Route("api/[controller]"), ApiController,Authorize]
+[Route("api/[controller]"), ApiController]
 public class AuthController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
@@ -33,8 +33,12 @@ public class AuthController : ControllerBase
     {
         AppUser appUser = new AppUser();
         appUser.Email = registerDTO.Email;
+#pragma warning disable CS8601 // Possible null reference assignment.
         appUser.Lastname = registerDTO.Lastname;
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning disable CS8601 // Possible null reference assignment.
         appUser.Firstname = registerDTO.Firstname;
+#pragma warning restore CS8601 // Possible null reference assignment.
         appUser.Birthday = registerDTO.Birthday;
         appUser.UserName = registerDTO.Username;
         var result = await _userManager.CreateAsync(appUser, registerDTO.Password);
@@ -78,7 +82,7 @@ public class AuthController : ControllerBase
             signingCredentials: signingCredentials,
             issuer: issuer,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(4).AddMinutes(2)
+            expires: DateTime.UtcNow.AddHours(4).AddMonths(1)
         );
         //jwt sec. tokeni stringe cevirirem burda:
         var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
