@@ -1,0 +1,1 @@
+﻿burda adlandirima base nen baslayir, projecte baslayarken bele olacagini fikilesmirdim esasen bu folderin adi Interfaces/services olmali idi, yeni bilin diye yazdim bunu.

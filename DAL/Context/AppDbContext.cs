@@ -24,9 +24,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
         builder.Entity<AppUser>().HasMany(u => u.UserFriends).WithOne(uf => uf.User).HasForeignKey(uf => uf.UserId);
         builder.ApplyConfiguration(new PostConfigurations());
         builder.ApplyConfiguration(new StoryConfigration());
-        builder.ApplyConfiguration(new CommentConfiguration());
         builder.ApplyConfiguration(new SavePostConfiguration());
-        builder.ApplyConfiguration(new LikeConfiguration());
         base.OnModelCreating(builder);
     }
 }

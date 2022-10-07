@@ -18,5 +18,6 @@ public class Mapper : Profile
         CreateMap<StoryCreateDTO, Story>();
         CreateMap<Story, StoryGetDTO>();
         CreateMap<AppUser, UserGetDTO>();
+        CreateMap<AppUser, FriendSuggestionDTO>();
     }
 }

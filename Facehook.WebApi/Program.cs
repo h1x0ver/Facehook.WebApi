@@ -1,3 +1,4 @@
+//using
 using Facehook.Business.Mapping;
 using Facehook.Business.Repositories;
 using Facehook.Business.Services;
@@ -16,26 +17,21 @@ using System.Text.Json.Serialization;
 //createBuilder
 var builder = WebApplication.CreateBuilder(args);
 
-//newtonsoftJson
+//newtonSoftJson
 builder.Services.AddControllers()
       .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 //cors error fix 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
-                                                                            builder =>
-                                                                            {
-                                                                                builder.WithOrigins("http://localhost:3000")
-                                                                                                      .AllowAnyHeader()
-                           //gulle atmisame ona gore ora gedibdi bu IIUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-                                                                                                      .AllowAnyMethod()
-                                                                                                      .AllowCredentials();
-                                                                            });
+      builder =>
+      {
+          builder.WithOrigins("http://localhost:3000")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials();
+      });
 });
 builder.Services.AddEndpointsApiExplorer();
 //swagger
@@ -55,8 +51,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 }).AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
 
 
-//Auth and Jwt
-
+//AUTH and change Default .net identity
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,18 +72,24 @@ builder.Services.AddAuthentication(options =>
 //mapper
 builder.Services.AddMapperService();
 
-
 //add scoped:
-//2 add scoped for 1 entity auye. bir az seryoznu ol.
+//2 add scoped for 1 entity.
 
-
-//post
+//post post post post post post
 builder.Services.AddScoped<IPostService, PostRepository>();
 builder.Services.AddScoped<IPostDal, PostRepositoryDal>();
 
 //savePost
 builder.Services.AddScoped<ISavePostService, SavePostRepository>();
 builder.Services.AddScoped<ISavePostDal, SavePostRepositoryDal>();
+
+//PostLike
+builder.Services.AddScoped<ILikeService, LikeRepository>();
+builder.Services.AddScoped<ILikeDal, LikeRepositoryDal>();
+
+//PostComment
+
+
 
 //user
 builder.Services.AddScoped<IUserService, UserRepository>();
@@ -107,6 +108,8 @@ builder.Services.AddScoped<IImageDal, ImageRepositoryDal>();
 builder.Services.AddScoped<IStoryService, StoryRepository>();
 builder.Services.AddScoped<IStoryDal, StoryRepositoryDal>();
 
+
+//MSSQL connection.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
@@ -126,11 +129,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 //auth
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStaticFiles();
 app.MapControllers();
-
+//run
 app.Run();

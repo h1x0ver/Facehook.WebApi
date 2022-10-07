@@ -42,7 +42,7 @@ public class PostRepository : IPostService
 
     public async Task<PostGetDto> Get(int id)
     {
-        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted, includes: "Images");
+        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted, 0, "User.ProfileImage", "Likes", "Comments", "Images");
         if (data is null)
         {
             throw new EntityCouldNotFoundException();
@@ -52,13 +52,16 @@ public class PostRepository : IPostService
 
 
         var postGetDto = _mapper.Map<PostGetDto>(data);
+        postGetDto.LikeCount = data!.Likes!.Count;
+        postGetDto.CommentCount = data!.Comments!.Count;
+
         postGetDto.ImageName = imageUrls;
         return postGetDto;
     }
 
     public async Task<List<PostGetDto>> GetAll()
     {
-        var datas = await _postDal.GetAllAsync(n => !n.isDeleted, includes: "Images");
+        var datas = await _postDal.GetAllAsync(n => !n.isDeleted, 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Images");
 
         if (datas is null)
         {
@@ -75,8 +78,10 @@ public class PostRepository : IPostService
                 Id = data.Id,
                 Title = data.Title,
                 CreatedDate = data.CreatedDate,
-                ImageName = imageUrls
+                ImageName = imageUrls,
             };
+            postGetDto.CommentCount = data.Comments!.Count;
+            postGetDto.LikeCount = data.Likes!.Count;
 
             postGetDtos.Add(postGetDto);
         }
@@ -121,23 +126,33 @@ public class PostRepository : IPostService
         post.isDeleted = true;
         await _postDal.SaveAsync();
     }
-    public async Task PostSaveAsync(PostSaveDTO postSave)
+    public async Task PostSave(PostSaveDTO entity)
     {
-        var postDb = await _postDal.GetAsync(p => p.Id == postSave.PostId);
+        var postDb = await _postDal.GetAsync(p => p.Id == entity.PostId);
         if (postDb is null)
         {
             throw new NotFoundException("Post is not found");
         };
         var userLoginId = _httpContextAccessor?.HttpContext?.User.GetUserId();
-        if (postSave.IsSave)
+        if (entity.IsSave)
         {
             var savePost = new SavePost
             {
-                PostId = postSave.PostId,
+                PostId = entity.PostId,
                 UserId = userLoginId
             };
             await _savePostDal.CreateAsync(savePost);
         }
+        else
+        {
+            SavePost posSaveDb = await _savePostDal.GetAsync(s => s.UserId == userLoginId && s.PostId == entity.PostId);
+            if (posSaveDb is null)
+            {
+                throw new NotFoundException("Post is not found");
+            }
+            await _savePostDal.DeleteAsync(posSaveDb);
+        }
+        await _savePostDal.SaveAsync();
     }
 
 }

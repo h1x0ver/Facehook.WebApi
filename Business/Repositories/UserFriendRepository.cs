@@ -57,7 +57,27 @@ public class UserFriendRepository : IUserFriendService
 
     public async Task<List<UserGetDTO>> FriendGetAllAsync()
     {
-        throw new NotImplementedException();
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync( n => n.FriendId == userId || n.UserId == userId && n.Status == FriendRequestStatus.Accepted,  0,  int.MaxValue, "User.ProfileImage");
+        if (userFriends is null) throw new NullReferenceException();
+        List<UserGetDTO> userGetDtos = new();
+        foreach (var userFriend in userFriends)
+        {
+            UserGetDTO userGetDto = new();
+            if (userFriend.UserId == userId)
+            {
+                userGetDto = _mapper.Map<UserGetDTO>(userFriend.Friend);
+                userGetDto.ProfileImage = userFriend.Friend?.ProfileImage?.Name;
+            }
+            else if (userFriend.FriendId == userId)
+            {
+                userGetDto = _mapper.Map<UserGetDTO>(userFriend.User);
+                userGetDto.ProfileImage = userFriend.User?.ProfileImage?.Name;
+
+            }
+            userGetDtos.Add(userGetDto);
+        }
+        return userGetDtos;
     }
 
     public async Task FriendRejectAsync(string? friendId)
@@ -80,12 +100,40 @@ public class UserFriendRepository : IUserFriendService
 
     public async Task<List<UserGetDTO>> GetFriendRequestAsync()
     {
-        throw new NotImplementedException();
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(n => n.FriendId == userId && n.Status == FriendRequestStatus.Pending, includes:"User.ProfileImage");
+        if (userFriends is null) throw new NullReferenceException();
+        List<UserGetDTO> userGetDtos = new();
+        foreach (var userFriend in userFriends)
+        {
+            UserGetDTO userGetDto = _mapper.Map<UserGetDTO>(userFriend.User);
+            userGetDto.ProfileImage = userFriend.User?.ProfileImage?.Name;
+            userGetDtos.Add(userGetDto);
+        }
+        return userGetDtos;
     }
 
     public async Task<List<FriendSuggestionDTO>> GetFriendSuggestionAsync()
     {
-        throw new NotImplementedException();
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        List<AppUser> users = await _userDal.GetAllAsync(expression: u => u.Id != userId, includes: "ProfileImage");
+        if (users is null) throw new NullReferenceException();
+        List<AppUser> notFriends = new();
+        foreach (var user in users)
+        {
+            UserFriend userFriend = await _userFriendDal.GetAsync(u => (u.UserId == user.Id && u.FriendId == userId) || (u.FriendId == user.Id && u.UserId == userId));
+            if (userFriend is null)
+            {
+                notFriends.Add(user);
+            }
+        }
+        List<FriendSuggestionDTO> friendSuggestionDtos = _mapper.Map<List<FriendSuggestionDTO>>(notFriends);
+        for (int i = 0; i < notFriends.Count; i++)
+        {
+            friendSuggestionDtos[i].ImageUrl = notFriends[i].ProfileImage?.Name;
+        }
+
+        return friendSuggestionDtos;
     }
 }
 

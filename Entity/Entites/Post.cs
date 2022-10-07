@@ -7,7 +7,6 @@ namespace Facehook.Entity.Entites;
 public class Post : BaseEntity, IEntity
 {
     public string? Title { get; set; }
-
     public string? UserId { get; set; }
     public AppUser? User { get; set; }
     public ICollection<Comment>? Comments { get; set; }
