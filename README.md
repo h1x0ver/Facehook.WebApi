@@ -24,51 +24,51 @@ error 4005 : {
 	email does not exist retarded!!!
 }
 
-//for apis
-
-/api/auth/login     |     username && pasword     |     token           | user login 
-/api/post      |  users   |   post  
-/api/story   | user  |  story
-
-
-AUTH
-
-api/register -> registration
-api/login - logining.
+#//for apis
+#
+#/api/auth/login     |     username && pasword     |     token           | user login 
+#/api/post      |  users   |   post  
+#/api/story   | user  |  story
 
 
-posts 
+#AUTH
 
-api/posts -> all post 
-
-api/posts/4 -> 4:id post.
-
-api/post/:id/comments -> post comments 
-
-api/post/:id/Likes -> post likes
+#api/register -> registration
+#api/login - logining.
 
 
-story
+#posts 
 
-api/story/user:id -> story by id
-api/story -> getAll story
+#api/posts -> all post 
 
+#api/posts/4 -> 4:id post.
 
-Friends
+#api/post/:id/comments -> post comments 
 
-api/friend/addFriend:id -> add Friend 
-api/friend/acceptFriend -> accept friend
-api/friend/friendRequests -> fr req
-api/friend/ friendSuggestion
-api/friend/getAllFriend
-api/friend/deleteFriend
-api/friend/rejectFriend
+#api/post/:id/Likes -> post likes
 
 
-User
-api/user/id -> getuser by id
-api/user/userUpdate -> update user data
-api/user/ChangeProfilePhoto -> change photo 
+#story
+
+#api/story/user:id -> story by id
+#api/story -> getAll story
+
+
+#Friends
+
+#api/friend/addFriend:id -> add Friend 
+#api/friend/acceptFriend -> accept friend
+#api/friend/friendRequests -> fr req
+#api/friend/ friendSuggestion
+#api/friend/getAllFriend
+#api/friend/deleteFriend
+#api/friend/rejectFriend
+
+
+#User
+#api/user/id -> getuser by id
+#api/user/userUpdate -> update user data
+#api/user/ChangeProfilePhoto -> change photo 
 
 
 
