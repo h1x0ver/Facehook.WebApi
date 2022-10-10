@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using System.Security.Claims;
 using Facehook.Business.Helper;
+using Facehook.Entity.Entites.Enum;
 
 namespace Facehook.Business.Repositories;
 
@@ -17,6 +18,7 @@ public class UserRepository : IUserService
     private readonly UserManager<AppUser> _userManager;
     private readonly IUserDal _userDal;
     private readonly IImageDal _imageDal;
+    private readonly IUserFriendDal _userFriendDal;
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IHostEnvironment _hostEnvironment;
@@ -26,7 +28,8 @@ public class UserRepository : IUserService
         IHostEnvironment hostEnvironment,
         IUserDal userDal,
         UserManager<AppUser> userManager,
-        IImageDal imageDal)
+        IImageDal imageDal,
+        IUserFriendDal userFriendDal)
     {
         _mapper = mapper;
         _httpContextAccessor = httpContextAccessor;
@@ -34,6 +37,7 @@ public class UserRepository : IUserService
         _userDal = userDal;
         _userManager = userManager;
         _imageDal = imageDal;
+        _userFriendDal = userFriendDal;
     }
     public async Task ChangeProfilePhotoAsync(ProfilePhotoDTO entity)
     {
@@ -52,28 +56,45 @@ public class UserRepository : IUserService
     }
     public async Task<UserGetDTO> Get(string id)         
     {
-        AppUser appUser = await _userDal.GetAsync(u => u.Id == id, includes: "ProfileImage");
+        AppUser appUser = await _userDal.GetAsync(u => u.Id == id,0,"ProfileImage","UserFriends");
+        if (appUser is null) throw new NullReferenceException();
+        return _mapper.Map<UserGetDTO>(appUser);
 
-        if (appUser is null)
-        {
-            throw new NullReferenceException();
-        }
-
-        UserGetDTO userGetDTO = new()
-        {
-            Id = appUser.Id,
-            Username = appUser.UserName,
-            Firstname = appUser.Firstname,
-            Lastname = appUser.Lastname
-        };
-        userGetDTO.ProfileImage = appUser.ProfileImage is not null ? appUser.ProfileImage.Name : "";
-        return userGetDTO;
     }
-    public Task<List<UserGetDTO>> GetAll()
+
+    public async Task<List<UserGetDTO>> GetAll()
     {
-        //mence getall a ehtiyac yoxdur bu case de
-        throw new NotImplementedException();
-        
+        //makaron.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        return _mapper.Map<List<UserGetDTO>>(await _userDal.GetAllAsync(c => !c.IsDeleted));
+    }
+
+    public async Task<UserProfileDTO> GetUserProfileAsync(string? id)
+    {
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        AppUser user = await _userDal.GetAsync(u => u.Id == id,includes: "ProfileImage");
+        UserProfileDTO userProfileDto = _mapper.Map<UserProfileDTO>(user);
+        UserFriend userFriend = await _userFriendDal.GetAsync(u => (u.UserId == id && u.FriendId == userId) || (u.FriendId == id && u.UserId == userId));
+        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(u => (u.UserId == userId && u.Status == FriendRequestStatus.Accepted) || (u.FriendId == userId && u.Status == FriendRequestStatus.Accepted));
+        userProfileDto.ProfileImage = user.ProfileImage is not null ? user.ProfileImage.Name : "";
+        userProfileDto.PostCount = user.Posts is null ? 0 : user.Posts.Count;
+        userProfileDto.FriendCount = userFriends is null ? 0 : userFriends.Count;
+        if (userFriend is null)
+        {
+            userProfileDto.Status = FriendRequestStatus.NotFriend;
+        }
+        else if (userFriend.UserId == userId && userFriend.Status != FriendRequestStatus.Accepted)
+        {
+            userProfileDto.Status = FriendRequestStatus.Pending;
+        }
+        else if (userFriend.FriendId == userId && userFriend.Status != FriendRequestStatus.Accepted)
+        {
+            userProfileDto.Status = FriendRequestStatus.Declined;
+        }
+        else if (userFriend.Status == FriendRequestStatus.Accepted)
+        {
+            userProfileDto.Status = FriendRequestStatus.Accepted;
+        }
+        return userProfileDto;
     }
 
     public async Task Update(UserUpdateDTO entity)

@@ -1,7 +1,6 @@
 ﻿
 using Facehook.Entity.Base;
 using Facehook.Entity.Identity;
-using Microsoft.AspNetCore.Http;
 
 namespace Facehook.Entity.Entites;
 public class Post : BaseEntity, IEntity

@@ -9,5 +9,7 @@ public interface IBaseService<TGet, TCreate, TUpdate, TSave>
     Task Update(int id, TUpdate entity);
     Task Delete(int id);
     Task PostSave(PostSaveDTO entity);
+    Task<List<TGet>> GetSavedPost();
+
 
 }

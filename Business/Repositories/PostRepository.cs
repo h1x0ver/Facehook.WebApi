@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Facehook.Business.DTO_s.Comment;
 using Facehook.Business.DTO_s.Post;
+using Facehook.Business.DTO_s.User;
 using Facehook.Business.Exceptions;
 using Facehook.Business.Extensions;
 using Facehook.Business.Helper;
@@ -39,54 +41,19 @@ public class PostRepository : IPostService
         _userDal = userDal;
         _savePostDal = savePostDal;
     }
-
-    public async Task<PostGetDto> Get(int id)
+    public async Task<PostGetDto> Get(int id)   
     {
-        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted, 0, "User.ProfileImage", "Likes", "Comments", "Images");
-        if (data is null)
-        {
-            throw new EntityCouldNotFoundException();
-        }
-        List<string?> imageUrls = new();
-        imageUrls.AddRange(data.Images!.Where(n => n.PostId == data.Id).ToList().Select(postImage => postImage.Name));
 
-
-        var postGetDto = _mapper.Map<PostGetDto>(data);
-        postGetDto.LikeCount = data!.Likes!.Count;
-        postGetDto.CommentCount = data!.Comments!.Count;
-
-        postGetDto.ImageName = imageUrls;
-        return postGetDto;
+        var data = await _postDal.GetAsync(n => n.Id == id && !n.isDeleted, 0, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
+        if (data is null) throw new EntityCouldNotFoundException();
+        return _mapper.Map<PostGetDto>(data);
     }
 
     public async Task<List<PostGetDto>> GetAll()
     {
-        var datas = await _postDal.GetAllAsync(n => !n.isDeleted, 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Images");
-
-        if (datas is null)
-        {
-            throw new EntityCouldNotFoundException();
-        }
-        List<PostGetDto> postGetDtos = new();
-
-        foreach (var data in datas)
-        {
-            List<string?> imageUrls = new();
-            imageUrls.AddRange(data.Images!.Where(n => n.PostId == data.Id).ToList().Select(postImage => postImage.Name));
-            PostGetDto postGetDto = new()
-            {
-                Id = data.Id,
-                Title = data.Title,
-                CreatedDate = data.CreatedDate,
-                ImageName = imageUrls,
-            };
-            postGetDto.CommentCount = data.Comments!.Count;
-            postGetDto.LikeCount = data.Likes!.Count;
-
-            postGetDtos.Add(postGetDto);
-        }
-
-        return postGetDtos;
+        var datas = await _postDal.GetAllAsync(n => !n.isDeleted, 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
+        if (datas is null) throw new EntityCouldNotFoundException();
+        return _mapper.Map<List<PostGetDto>>(datas);
     }
     public async Task Create(PostCreateDTO entity)
     {
@@ -128,24 +95,25 @@ public class PostRepository : IPostService
     }
     public async Task PostSave(PostSaveDTO entity)
     {
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        AppUser appUser = await _userDal.GetAsync(u => u.Id == userId);
         var postDb = await _postDal.GetAsync(p => p.Id == entity.PostId);
         if (postDb is null)
         {
             throw new NotFoundException("Post is not found");
         };
-        var userLoginId = _httpContextAccessor?.HttpContext?.User.GetUserId();
         if (entity.IsSave)
         {
             var savePost = new SavePost
             {
                 PostId = entity.PostId,
-                UserId = userLoginId
+                UserId = userId
             };
             await _savePostDal.CreateAsync(savePost);
         }
         else
         {
-            SavePost posSaveDb = await _savePostDal.GetAsync(s => s.UserId == userLoginId && s.PostId == entity.PostId);
+            SavePost posSaveDb = await _savePostDal.GetAsync(s => s.UserId == userId && s.PostId == entity.PostId);
             if (posSaveDb is null)
             {
                 throw new NotFoundException("Post is not found");
@@ -155,4 +123,13 @@ public class PostRepository : IPostService
         await _savePostDal.SaveAsync();
     }
 
+    public async Task<List<PostGetDto>> GetSavedPost()
+    {   
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        AppUser appUser = await _userDal.GetAsync(u => u.Id == userId);
+        var savedPostsOfUsers = await _savePostDal.GetAllAsync(s => s.UserId == appUser.Id);
+        var savedPostIds = savedPostsOfUsers.Select(s => s.PostId);
+        var savedPosts = await _postDal.GetAllAsync(p => !p.isDeleted && savedPostIds.Contains(p.Id), 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
+        return _mapper.Map<List<PostGetDto>>(savedPosts);
+    }
 }

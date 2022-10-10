@@ -6,7 +6,7 @@ public class SavePost : IEntity
     public int Id { get; set; }
     public string? CreatedDate { get; set; }
     public string? UserId { get; set; }
-    public AppUser? AppUser { get; set; }
+    public AppUser? User { get; set; }
     public int PostId { get; set; }
     public Post? Post { get; set; }
 }

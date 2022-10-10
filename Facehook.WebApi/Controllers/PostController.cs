@@ -1,4 +1,5 @@
-﻿using Facehook.Business.DTO_s.Post;
+﻿using Facehook.Business.DTO_s;
+using Facehook.Business.DTO_s.Post;
 using Facehook.Business.Services;
 using Facehook.Entity.DTO.Post;
 using Facehook.Exceptions.EntityExceptions;
@@ -12,36 +13,28 @@ public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
     private readonly ILikeService _likeService;
+    private readonly ICommentService _commentService;
 
-    public PostController(IPostService postService, ILikeService likeService)
+    public PostController(IPostService postService,
+                          ILikeService likeService,
+                          ICommentService commentService)
     {
         _postService = postService;
         _likeService = likeService;
+        _commentService = commentService;
     }
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        try
-        {
-            var data = await _postService.GetAll();
-            return Ok(data);
-        }
-        catch (EntityCouldNotFoundException ex)
-        {
-            return StatusCode(StatusCodes.Status404NotFound, new Response(4222, ex.Message));
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
-        }
+            return Ok(await _postService.GetAll());
+
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
         try
         {
-            var data = await _postService.Get(id);
-            return Ok(data);
+            return Ok(await _postService.Get(id));
         }
         catch (EntityCouldNotFoundException ex)
         {
@@ -109,6 +102,26 @@ public class PostController : ControllerBase
             return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
         }
     }
+    [HttpGet("saved")]
+    public async Task<ActionResult> Saved()
+    {
+        try
+        {
+           return Ok( await _postService.GetSavedPost());
+          
+        }
+        catch (EntityCouldNotFoundException ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4991, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
+        }
+
+    }
+
+
     [HttpPost("likeadd/{id}")]
     public async Task<ActionResult> LikeAddAsync(int id)
     {
@@ -134,7 +147,7 @@ public class PostController : ControllerBase
         try
         {
             await _likeService.DeleteLikeAsync(id);
-            return NoContent();3
+            return NoContent();
         }
         catch (EntityCouldNotFoundException ex)
         {
@@ -145,4 +158,40 @@ public class PostController : ControllerBase
             return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
         }
     }
+    [HttpPost("commentadd")]
+    public async Task<ActionResult> CommentAddAsync(CommentCreateDTO commentCreateDto)
+    {
+        try
+        {
+            await _commentService.CreateCommentAsync(commentCreateDto);
+            return NoContent();
+        }
+        catch (EntityCouldNotFoundException ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4991, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
+        }
+    }
+
+    [HttpPut("commentdelete/{id}")]
+    public async Task<ActionResult> CommentDeleteAsync(int id)
+    {
+        try
+        {
+            await _commentService.DeleteCommentAsync(id);
+            return NoContent();
+        }
+        catch (EntityCouldNotFoundException ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4991, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, new Response(4100, ex.Message));
+        }
+    }
+
 }

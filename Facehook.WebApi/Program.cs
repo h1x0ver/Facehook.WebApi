@@ -9,6 +9,7 @@ using Facehook.Entity.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
@@ -88,6 +89,8 @@ builder.Services.AddScoped<ILikeService, LikeRepository>();
 builder.Services.AddScoped<ILikeDal, LikeRepositoryDal>();
 
 //PostComment
+builder.Services.AddScoped<ICommentService, CommentRepository>();
+builder.Services.AddScoped<ICommentDal, CommentRepositoryDal>();
 
 
 
@@ -133,7 +136,14 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "images")),
+    RequestPath = "/img"
+});
+
+
 app.MapControllers();
 //run
 app.Run();

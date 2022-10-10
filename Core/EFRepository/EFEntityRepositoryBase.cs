@@ -17,14 +17,14 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
     {
         _context = context;
     }
-    public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, params string[] includes)
+    public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>>? expression, int? skip = null, params string[] includes)
     {
         var query = expression == null ?
           _context.Set<TEntity>() :
           _context.Set<TEntity>().Where(expression);
 
         
-        if (skip != null)
+        if (skip != null && skip != 0)
         {
             query.Skip((int)skip);
         }
@@ -39,17 +39,16 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         }
 
         var data = await query.FirstOrDefaultAsync();
-        if (data is null) throw new Exception();
 
         return data;
     }
-    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, int? skip = 0, int? take = int.MaxValue, params string[] includes)
+    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, int? skip = null, int? take = int.MaxValue, params string[] includes)
     {
         var query = expression == null ?
             _context.Set<TEntity>().AsNoTracking() :
             _context.Set<TEntity>().Where(expression).AsNoTracking();
 
-        if (skip != null)
+        if (skip != null && skip != 0)
         {
             query.Skip((int)skip);
         }

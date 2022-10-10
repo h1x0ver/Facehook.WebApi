@@ -37,6 +37,24 @@ namespace Facehook.WebApi.Controllers
             }
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var user = await _userService.GetAll();
+                return Ok(user);
+            }
+            catch (EntityCouldNotFoundException ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4222, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
+            }
+
+        }
         [HttpPost("userUpdate")]
         public async Task<ActionResult> UserUpdateAsyncs(UserUpdateDTO entity)
         {
@@ -71,6 +89,22 @@ namespace Facehook.WebApi.Controllers
                 return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
             }
 
+        }
+        [HttpGet("userProfile/{id}")]
+        public async Task<ActionResult> UserProfileAsync(string? id)
+        {
+            try
+            {
+                return Ok(await _userService.GetUserProfileAsync(id));
+            }
+            catch (EntityCouldNotFoundException ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4222, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.StackTrace));
+            }
         }
 
     }

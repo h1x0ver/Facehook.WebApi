@@ -4,6 +4,7 @@ using Facehook.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Facehook.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221008075828_MaybeLastMigrations")]
+    partial class MaybeLastMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +165,9 @@ namespace Facehook.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
@@ -173,13 +178,13 @@ namespace Facehook.DAL.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("AppUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("SavePosts");
                 });
@@ -535,21 +540,19 @@ namespace Facehook.DAL.Migrations
 
             modelBuilder.Entity("Facehook.Entity.Entites.SavePost", b =>
                 {
+                    b.HasOne("Facehook.Entity.Identity.AppUser", "AppUser")
+                        .WithMany("SavePosts")
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("Facehook.Entity.Entites.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Facehook.Entity.Identity.AppUser", "User")
-                        .WithMany("SavePosts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("AppUser");
 
                     b.Navigation("Post");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Facehook.Entity.Entites.Story", b =>
