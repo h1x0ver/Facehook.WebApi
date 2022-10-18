@@ -51,7 +51,7 @@ public class PostRepository : IPostService
 
     public async Task<List<PostGetDto>> GetAll()
     {
-        var datas = await _postDal.GetAllAsync(n => !n.isDeleted, 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
+        var datas = await _postDal.GetAllAsync(orderBy: n => n.CreatedDate, n => !n.isDeleted, 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
         if (datas is null) throw new EntityCouldNotFoundException();
         return _mapper.Map<List<PostGetDto>>(datas);
     }
@@ -93,27 +93,28 @@ public class PostRepository : IPostService
         post.isDeleted = true;
         await _postDal.SaveAsync();
     }
-    public async Task PostSave(PostSaveDTO entity)
+    public async Task PostSave(int id)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         AppUser appUser = await _userDal.GetAsync(u => u.Id == userId);
-        var postDb = await _postDal.GetAsync(p => p.Id == entity.PostId);
+        var postDb = await _postDal.GetAsync(p => p.Id == id);
         if (postDb is null)
         {
             throw new NotFoundException("Post is not found");
         };
-        if (entity.IsSave)
+        var savedPost = await _savePostDal.GetAsync(s => s.PostId == id);
+        if (savedPost is null)
         {
             var savePost = new SavePost
             {
-                PostId = entity.PostId,
+                PostId = id,
                 UserId = userId
             };
             await _savePostDal.CreateAsync(savePost);
         }
         else
         {
-            SavePost posSaveDb = await _savePostDal.GetAsync(s => s.UserId == userId && s.PostId == entity.PostId);
+            SavePost posSaveDb = await _savePostDal.GetAsync(s => s.UserId == userId && s.PostId == id);
             if (posSaveDb is null)
             {
                 throw new NotFoundException("Post is not found");
@@ -127,9 +128,9 @@ public class PostRepository : IPostService
     {   
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         AppUser appUser = await _userDal.GetAsync(u => u.Id == userId);
-        var savedPostsOfUsers = await _savePostDal.GetAllAsync(s => s.UserId == appUser.Id);
+        var savedPostsOfUsers = await _savePostDal.GetAllAsync(orderBy: n => n.CreatedDate,s => s.UserId == appUser.Id);
         var savedPostIds = savedPostsOfUsers.Select(s => s.PostId);
-        var savedPosts = await _postDal.GetAllAsync(p => !p.isDeleted && savedPostIds.Contains(p.Id), 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
+        var savedPosts = await _postDal.GetAllAsync(orderBy: n => n.CreatedDate,p => !p.isDeleted && savedPostIds.Contains(p.Id), 0, int.MaxValue, "User.ProfileImage", "Likes", "Comments", "Comments.User", "Comments.User.ProfileImage", "Images");
         return _mapper.Map<List<PostGetDto>>(savedPosts);
     }
 }

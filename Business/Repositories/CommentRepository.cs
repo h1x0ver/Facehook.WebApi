@@ -47,7 +47,7 @@ public class CommentRepository : ICommentService
 
     public async Task<List<CommentGetDTO>> GetPostCommentsAsync(int id)
     {
-        List<Comment> comments = await _commentDal.GetAllAsync(n => n.PostId == id, 0, int.MaxValue, "User.ProfileImage");
+        List<Comment> comments = await _commentDal.GetAllAsync(orderBy: n => n.CreatedDate, n => n.PostId == id,  0, int.MaxValue, "User.ProfileImage");
         List<CommentGetDTO> commentGetDtos = _mapper.Map<List<CommentGetDTO>>(comments);
         return commentGetDtos;
     }

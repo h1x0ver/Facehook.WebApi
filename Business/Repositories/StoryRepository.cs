@@ -40,44 +40,17 @@ public class StoryRepository : IStoryService
 
     public async Task<StoryGetDTO> Get(int id)
     {
-        var data = await _storyDal.GetAsync(n => n.Id == id && !n.isDeleted, includes: "Images");
-        if (data is null)
-        {
-            throw new EntityCouldNotFoundException();
-        }
-        List<string?> imageUrls = new();
-        imageUrls.AddRange(data.Images!.Where(n => n.PostId == data.Id).ToList().Select(storyImage => storyImage.Name));
 
-        var postGetDto = _mapper.Map<StoryGetDTO>(data);
-        postGetDto.ImageName = imageUrls;
-        return postGetDto;
+        var data = await _storyDal.GetAsync(n => n.Id == id && !n.isDeleted, 0, "User.ProfileImage", "Images");
+        if (data is null) throw new EntityCouldNotFoundException();
+        return _mapper.Map<StoryGetDTO>(data);
     }
 
     public async Task<List<StoryGetDTO>> GetAll()
     {
-        var datas = await _storyDal.GetAllAsync(n => !n.isDeleted, includes: "Images");
-
-        if (datas is null)
-        {
-            throw new EntityCouldNotFoundException();
-        }
-        List<StoryGetDTO> storyGetDTOs = new();
-
-        foreach (var data in datas)
-        {
-            List<string?> imageUrls = new();
-            imageUrls.AddRange(data.Images!.Where(n => n.StoryId == data.Id).ToList().Select(storyImage => storyImage.Name));
-            StoryGetDTO storyGetDTO = new()
-            {
-                Id = data.Id,
-                Title = data.Title,
-                CreatedDate = data.CreatedDate,
-                ImageName = imageUrls
-            };
-
-            storyGetDTOs.Add(storyGetDTO);
-        }
-        return storyGetDTOs;
+        var datas = await _storyDal.GetAllAsync(orderBy: n => n.CreatedDate, n => !n.isDeleted, 0, int.MaxValue, "User.ProfileImage", "Images");
+        if (datas is null) throw new EntityCouldNotFoundException();
+        return _mapper.Map<List<StoryGetDTO>>(datas);
     }
 
     public async Task Create(StoryCreateDTO entity)

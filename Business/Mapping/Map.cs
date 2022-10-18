@@ -18,18 +18,21 @@ public class Mapper : Profile
 
         CreateMap<Post, PostGetDto>()
             .ForMember(c => c.ImageName, c => c.Ignore())
-            .ForMember(c => c.LikeCount, c => c.MapFrom(c => c.Likes.Count))
-            .ForMember(c => c.CommentCount, c => c.MapFrom(c => c.Comments.Count))
-            .ForMember(c => c.ImageName, c => c.MapFrom(c => c.Images.Select(c => c.Name)));
+            .ForMember(c => c.LikeCount, c => c.MapFrom(c => c.Likes!.Count))
+            .ForMember(c => c.CommentCount, c => c.MapFrom(c => c.Comments!.Count))
+            .ForMember(c => c.ImageName, c => c.MapFrom(c => c.Images!.Select(c => c.Name)));
 
 
         CreateMap<PostCreateDTO, Post>();
         CreateMap<StoryCreateDTO, Story>();
-        CreateMap<Story, StoryGetDTO>();
-        CreateMap<AppUser, UserGetDTO>()
-             .ForMember(c => c.ProfileImage, c => c.MapFrom(c => c.ProfileImage.Name));
+        CreateMap<Story, StoryGetDTO>()
+            .ForMember(c => c.ImageName, c => c.Ignore())
+            .ForMember(c => c.ImageName, c => c.MapFrom(c => c.Images!.Select(c => c.Name)));
 
-            
+        CreateMap<AppUser, UserGetDTO>()
+             .ForMember(c => c.ProfileImage, c => c.MapFrom(c => c.ProfileImage!.Name));
+
+
         CreateMap<AppUser, FriendSuggestionDTO>();
         CreateMap<AppUser, UserProfileDTO>()
             .ForMember(c => c.ProfileImage, c => c.Ignore())

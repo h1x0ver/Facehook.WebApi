@@ -85,12 +85,12 @@ public class PostController : ControllerBase
         await _postService.Delete(id);
         return NoContent();
     }
-    [HttpPost("Save")]
-    public async Task<IActionResult> SavePost(PostSaveDTO postSaveDTO)
+    [HttpPost("Save/{id}")]
+    public async Task<IActionResult> SavePost(int id)
     {
         try
         {
-            await _postService.PostSave(postSaveDTO);
+            await _postService.PostSave(id);
             return NoContent();
         }
         catch (EntityCouldNotFoundException ex)

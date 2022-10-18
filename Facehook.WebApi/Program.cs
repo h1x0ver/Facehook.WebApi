@@ -6,17 +6,21 @@ using Facehook.DAL.Abstracts;
 using Facehook.DAL.Context;
 using Facehook.DAL.Implementations;
 using Facehook.Entity.Identity;
+using Facehook.WebApi.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
 //createBuilder
 var builder = WebApplication.CreateBuilder(args);
+
+
+//SignalR
+builder.Services.AddSignalR();
 
 //newtonSoftJson
 builder.Services.AddControllers()
@@ -25,18 +29,15 @@ builder.Services.AddControllers()
 //cors error fix 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(
-      builder =>
-      {
-          builder.WithOrigins("http://localhost:3000")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod()
-                                .AllowCredentials();
-      });
+    options.AddPolicy("AllowOrigins",
+        builder => builder.WithOrigins("http://localhost:3000").WithMethods("PUT", "DELETE", "GET"));
 });
+
+
 builder.Services.AddEndpointsApiExplorer();
 //swagger
 builder.Services.AddSwaggerGen();
+//identity
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
 
@@ -48,7 +49,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Lockout.AllowedForNewUsers = false;
 
     options.User.RequireUniqueEmail = true;
-    
+
 }).AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
 
 
@@ -100,7 +101,7 @@ builder.Services.AddScoped<IUserDal, UserRepositoryDal>();
 
 //User-Friend
 builder.Services.AddScoped<IUserFriendService, UserFriendRepository>();
-builder.Services.AddScoped<IUserFriendDal, UserFriendRepositoryDal>();    
+builder.Services.AddScoped<IUserFriendDal, UserFriendRepositoryDal>();
 
 //image
 builder.Services.AddScoped<IImageService, ImageRepository>();
@@ -112,7 +113,7 @@ builder.Services.AddScoped<IStoryService, StoryRepository>();
 builder.Services.AddScoped<IStoryDal, StoryRepositoryDal>();
 
 
-//MSSQL connection.
+//MY...SQL connection.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
@@ -121,7 +122,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var app = builder.Build();
 
 //cors error fix
-app.UseCors();
+app.UseCors(x => x
+    .WithOrigins("http://localhost:3000")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+    .SetIsOriginAllowed(origin => true)
+);
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -131,6 +141,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 //auth
 app.UseAuthentication();
@@ -144,6 +155,12 @@ app.UseStaticFiles(new StaticFileOptions()
 });
 
 
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chat");
+});
 app.MapControllers();
+
 //run
 app.Run();

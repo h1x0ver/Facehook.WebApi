@@ -10,7 +10,6 @@ public class PostGetDto
     public string? Title { get; set; }
     public UserGetDTO? User { get; set; }
     public int LikeCount { get; set; }
-    //public Like? Likes { get; set; }
     public int CommentCount { get; set; }
     public List<CommentGetDTO>? Comments { get; set; }
 }

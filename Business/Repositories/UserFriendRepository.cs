@@ -58,7 +58,7 @@ public class UserFriendRepository : IUserFriendService
     public async Task<List<UserGetDTO>> FriendGetAllAsync()
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync( n => n.FriendId == userId || n.UserId == userId && n.Status == FriendRequestStatus.Accepted,  0,  int.MaxValue, "User.ProfileImage");
+        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(n => n.Id, n => (n.FriendId == userId && n.Status == FriendRequestStatus.Accepted) || (n.UserId == userId && n.Status == FriendRequestStatus.Accepted),0, int.MaxValue, "User.ProfileImage", "Friend.ProfileImage");
         if (userFriends is null) throw new NullReferenceException();
         List<UserGetDTO> userGetDtos = new();
         foreach (var userFriend in userFriends)
@@ -101,7 +101,7 @@ public class UserFriendRepository : IUserFriendService
     public async Task<List<UserGetDTO>> GetFriendRequestAsync()
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(n => n.FriendId == userId && n.Status == FriendRequestStatus.Pending, includes:"User.ProfileImage");
+        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(orderBy:n=>n.SenderDate,n => n.FriendId == userId && n.Status == FriendRequestStatus.Pending, includes:"User.ProfileImage");
         if (userFriends is null) throw new NullReferenceException();
         List<UserGetDTO> userGetDtos = new();
         foreach (var userFriend in userFriends)
@@ -116,7 +116,7 @@ public class UserFriendRepository : IUserFriendService
     public async Task<List<FriendSuggestionDTO>> GetFriendSuggestionAsync()
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        List<AppUser> users = await _userDal.GetAllAsync(expression: u => u.Id != userId, includes: "ProfileImage");
+        List<AppUser> users = await _userDal.GetAllAsync(orderBy:n=>n.Id,expression: u => u.Id != userId, includes: "ProfileImage");
         if (users is null) throw new NullReferenceException();
         List<AppUser> notFriends = new();
         foreach (var user in users)

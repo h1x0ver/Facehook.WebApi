@@ -69,7 +69,7 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim("Firstname", user.Firstname),
-            new Claim("Lastname", user.Lastname)
+            new Claim("Lastname",   user.Lastname)
         };
         var roles = await _userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(n => new Claim(ClaimTypes.Role, n)));

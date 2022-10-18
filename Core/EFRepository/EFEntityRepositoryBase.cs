@@ -42,11 +42,11 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
 
         return data;
     }
-    public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression, int? skip = null, int? take = int.MaxValue, params string[] includes)
+    public async Task<List<TEntity>> GetAllAsync<TEntityOrderBy>(Expression<Func<TEntity, TEntityOrderBy>> orderBy, Expression<Func<TEntity, bool>>? expression, int? skip = null, int? take = int.MaxValue, params string[] includes)
     {
         var query = expression == null ?
-            _context.Set<TEntity>().AsNoTracking() :
-            _context.Set<TEntity>().Where(expression).AsNoTracking();
+            _context.Set<TEntity>().OrderByDescending(orderBy).AsNoTracking() :
+            _context.Set<TEntity>().OrderByDescending(orderBy).Where(expression).AsNoTracking();
 
         if (skip != null && skip != 0)
         {
@@ -67,6 +67,7 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
         }
 
         var data = await query.ToListAsync();
+
 
         return data;
     }
@@ -92,6 +93,5 @@ public class EFEntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<T
     {
        await _context.SaveChangesAsync();
     }
-
 
 }

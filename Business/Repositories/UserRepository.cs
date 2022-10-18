@@ -64,8 +64,7 @@ public class UserRepository : IUserService
 
     public async Task<List<UserGetDTO>> GetAll()
     {
-        //makaron.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        return _mapper.Map<List<UserGetDTO>>(await _userDal.GetAllAsync(c => !c.IsDeleted));
+        return _mapper.Map<List<UserGetDTO>>(await _userDal.GetAllAsync(orderBy: n => n.UserName, c => !c.IsDeleted, 0, int.MaxValue,includes:"ProfileImage"));
     }
 
     public async Task<UserProfileDTO> GetUserProfileAsync(string? id)
@@ -74,7 +73,7 @@ public class UserRepository : IUserService
         AppUser user = await _userDal.GetAsync(u => u.Id == id,includes: "ProfileImage");
         UserProfileDTO userProfileDto = _mapper.Map<UserProfileDTO>(user);
         UserFriend userFriend = await _userFriendDal.GetAsync(u => (u.UserId == id && u.FriendId == userId) || (u.FriendId == id && u.UserId == userId));
-        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(u => (u.UserId == userId && u.Status == FriendRequestStatus.Accepted) || (u.FriendId == userId && u.Status == FriendRequestStatus.Accepted));
+        List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(orderBy: n => n.UserId, u => (u.UserId == userId && u.Status == FriendRequestStatus.Accepted) || (u.FriendId == userId && u.Status == FriendRequestStatus.Accepted));
         userProfileDto.ProfileImage = user.ProfileImage is not null ? user.ProfileImage.Name : "";
         userProfileDto.PostCount = user.Posts is null ? 0 : user.Posts.Count;
         userProfileDto.FriendCount = userFriends is null ? 0 : userFriends.Count;
