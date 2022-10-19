@@ -14,6 +14,8 @@ using Facehook.Entity.Entites.Enum;
 namespace Facehook.Business.Repositories;
 
 public class UserRepository : IUserService
+
+
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly IUserDal _userDal;
@@ -64,7 +66,7 @@ public class UserRepository : IUserService
 
     public async Task<List<UserGetDTO>> GetAll()
     {
-        return _mapper.Map<List<UserGetDTO>>(await _userDal.GetAllAsync(orderBy: n => n.UserName, c => !c.IsDeleted, 0, int.MaxValue,includes:"ProfileImage"));
+        return _mapper.Map<List<UserGetDTO>>(await _userDal.GetAllAsync(orderBy: n => n.UserName, c => !c.IsDeleted, 0, int.MaxValue,includes: "ProfileImage"));
     }
 
     public async Task<UserProfileDTO> GetUserProfileAsync(string? id)
@@ -111,14 +113,30 @@ public class UserRepository : IUserService
 
         if (entity.Lastname is not null && entity.Lastname?.Trim() != "")
         {
-            appUser.Lastname = entity.Lastname?.Trim();
+            appUser.Lastname = entity.Lastname?.Trim(); 
         }
 
         if (entity.Username is not null && entity.Username?.Trim() != "")
         {
             appUser.UserName = entity.Username?.Trim();
         }
+        if (entity.Email is not null && entity.Email?.Trim() != "")
+        {
+            appUser.Email = entity.Email?.Trim();
+        }
 
         await _userManager.UpdateAsync(appUser);
+    }
+    public async Task ChangeUserPasswordAsync(PasswordChangeDto passwordChangeDto)
+    {
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        AppUser user = await _userDal.GetAsync(u => u.Id == userId, includes:"ProfileImage");
+        if (!await _userManager.CheckPasswordAsync(user, passwordChangeDto.OldPassword)) throw new NullReferenceException();
+        if (passwordChangeDto.NewPassword?.Trim() != passwordChangeDto.NewPasswordAgain?.Trim())
+        {
+            throw new NullReferenceException();
+        }
+        await _userManager.RemovePasswordAsync(user);
+        await _userManager.AddPasswordAsync(user, passwordChangeDto.NewPassword);
     }
 }

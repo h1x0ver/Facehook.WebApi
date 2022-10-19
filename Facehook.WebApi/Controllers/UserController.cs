@@ -103,7 +103,24 @@ namespace Facehook.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.StackTrace));
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
+            }
+        }
+        [HttpPost("changePassword")]
+        public async Task<ActionResult> ChangePassword([FromBody] PasswordChangeDto passwordChangeDto)
+        {
+            try
+            {
+                await _userService.ChangeUserPasswordAsync(passwordChangeDto);
+                return NoContent();
+            }
+            catch (EntityCouldNotFoundException ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4222, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response(4000, ex.Message));
             }
         }
 

@@ -1,4 +1,6 @@
-﻿namespace Facehook.Business.Base;
+﻿using Facehook.Business.DTO_s.User;
+
+namespace Facehook.Business.Base;
 public interface IBaseServiceForUsers<TGet, TUpdate, ProfilePhotoGet, TUserProfileDto>
 {
     Task<TGet> Get(string id);
@@ -7,5 +9,6 @@ public interface IBaseServiceForUsers<TGet, TUpdate, ProfilePhotoGet, TUserProfi
     Task Update(TUpdate entity);
     Task ChangeProfilePhotoAsync(ProfilePhotoGet entity);
     Task<TUserProfileDto> GetUserProfileAsync(string? id);
+    Task ChangeUserPasswordAsync(PasswordChangeDto passwordChangeDto);
 
 }
