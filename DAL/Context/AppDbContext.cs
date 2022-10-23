@@ -16,6 +16,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<Story> Stories { get; set; }
     public DbSet<SavePost> SavePosts{ get; set; }
     public DbSet<UserFriend> UserFriends { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
 
 
@@ -25,6 +26,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
         builder.ApplyConfiguration(new PostConfigurations());
         builder.ApplyConfiguration(new StoryConfigration());
         builder.ApplyConfiguration(new SavePostConfiguration());
+        builder.ApplyConfiguration(new MessageConfiguration());
         base.OnModelCreating(builder);
     }
 }

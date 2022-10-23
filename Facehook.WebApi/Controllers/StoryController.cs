@@ -2,13 +2,12 @@
 using Facehook.Business.Services;
 using Facehook.Exceptions.EntityExceptions;
 using Facehook.WebApi.Common;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Facehook.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Route("api/[controller]"), ApiController, Authorize]
     public class StoryController : ControllerBase
     {
         private readonly IStoryService _storyService;

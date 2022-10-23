@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Facehook.Business.Exceptions.FileExceptions
+namespace Facehook.Exceptions.FileExceptions
+
 {
     public class FileException : Exception
     {

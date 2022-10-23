@@ -1,4 +1,5 @@
 //using
+using Facehook.Business.Hubs;
 using Facehook.Business.Mapping;
 using Facehook.Business.Repositories;
 using Facehook.Business.Services;
@@ -6,9 +7,9 @@ using Facehook.DAL.Abstracts;
 using Facehook.DAL.Context;
 using Facehook.DAL.Implementations;
 using Facehook.Entity.Identity;
-using Facehook.WebApi.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -113,6 +114,11 @@ builder.Services.AddScoped<IStoryService, StoryRepository>();
 builder.Services.AddScoped<IStoryDal, StoryRepositoryDal>();
 
 
+//chat
+builder.Services.AddTransient<Hub<IChatClient>, ChatHub>();
+builder.Services.AddScoped<IMessageService, MessageRepository>();
+builder.Services.AddScoped<IMessageDal, MessageRepositoryDal>();
+
 //MY...SQL connection.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -158,7 +164,8 @@ app.UseStaticFiles(new StaticFileOptions()
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<ChatHub>("/chat");
+    endpoints.MapHub<ChatHub>("/chathub");
+    endpoints.MapControllers();
 });
 app.MapControllers();
 

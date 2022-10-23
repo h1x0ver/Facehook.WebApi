@@ -2,7 +2,6 @@
 using Facehook.Business.DTO_s.Comment;
 using Facehook.Business.DTO_s.Post;
 using Facehook.Business.DTO_s.User;
-using Facehook.Business.Exceptions;
 using Facehook.Business.Extensions;
 using Facehook.Business.Helper;
 using Facehook.Business.Services;
@@ -10,6 +9,7 @@ using Facehook.DAL.Abstracts;
 using Facehook.Entity.DTO.Post;
 using Facehook.Entity.Entites;
 using Facehook.Entity.Identity;
+using Facehook.Exceptions;
 using Facehook.Exceptions.EntityExceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;

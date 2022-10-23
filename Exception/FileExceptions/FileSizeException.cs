@@ -1,6 +1,5 @@
-﻿using Facehook.Business.Exceptions.FileExceptions;
+﻿namespace Facehook.Exceptions.FileExceptions
 
-namespace Facehook.Business.Exceptions.FileExceptions
 {
     public class FileSizeException : FileException
     {

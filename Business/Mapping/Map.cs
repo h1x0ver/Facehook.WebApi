@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Facehook.Business.DTO_s;
 using Facehook.Business.DTO_s.Comment;
+using Facehook.Business.DTO_s.Message;
 using Facehook.Business.DTO_s.Story;
 using Facehook.Business.DTO_s.User;
 using Facehook.Entity.DTO.Post;
@@ -32,6 +33,8 @@ public class Mapper : Profile
         CreateMap<AppUser, UserGetDTO>()
              .ForMember(c => c.ProfileImage, c => c.MapFrom(c => c.ProfileImage!.Name));
 
+        CreateMap<MessageDTO, Message>();
+        CreateMap<Message, MessageGetDTO>();
 
         CreateMap<AppUser, FriendSuggestionDTO>();
         CreateMap<AppUser, UserProfileDTO>()

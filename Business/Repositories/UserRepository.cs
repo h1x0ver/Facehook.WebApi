@@ -72,7 +72,7 @@ public class UserRepository : IUserService
     public async Task<UserProfileDTO> GetUserProfileAsync(string? id)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        AppUser user = await _userDal.GetAsync(u => u.Id == id,includes: "ProfileImage");
+        AppUser user = await _userDal.GetAsync(u => u.Id == id,0, "ProfileImage", "Posts");
         UserProfileDTO userProfileDto = _mapper.Map<UserProfileDTO>(user);
         UserFriend userFriend = await _userFriendDal.GetAsync(u => (u.UserId == id && u.FriendId == userId) || (u.FriendId == id && u.UserId == userId));
         List<UserFriend> userFriends = await _userFriendDal.GetAllAsync(orderBy: n => n.UserId, u => (u.UserId == userId && u.Status == FriendRequestStatus.Accepted) || (u.FriendId == userId && u.Status == FriendRequestStatus.Accepted));
@@ -87,14 +87,15 @@ public class UserRepository : IUserService
         {
             userProfileDto.Status = FriendRequestStatus.Pending;
         }
-        else if (userFriend.FriendId == userId && userFriend.Status != FriendRequestStatus.Accepted)
-        {
-            userProfileDto.Status = FriendRequestStatus.Declined;
-        }
         else if (userFriend.Status == FriendRequestStatus.Accepted)
         {
             userProfileDto.Status = FriendRequestStatus.Accepted;
         }
+        else if (userFriend.FriendId == userId && userFriend.Status != FriendRequestStatus.Accepted)
+        {
+            userProfileDto.Status = FriendRequestStatus.Declined;
+        }
+     
         return userProfileDto;
     }
 
@@ -132,7 +133,7 @@ public class UserRepository : IUserService
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         AppUser user = await _userDal.GetAsync(u => u.Id == userId, includes:"ProfileImage");
         if (!await _userManager.CheckPasswordAsync(user, passwordChangeDto.OldPassword)) throw new NullReferenceException();
-        if (passwordChangeDto.NewPassword?.Trim() != passwordChangeDto.NewPasswordAgain?.Trim())
+        if (passwordChangeDto.NewPassword?.Trim() != passwordChangeDto.ConfirmPassword?.Trim())
         {
             throw new NullReferenceException();
         }

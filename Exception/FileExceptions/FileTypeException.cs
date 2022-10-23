@@ -1,4 +1,5 @@
-﻿namespace Facehook.Business.Exceptions.FileExceptions
+﻿namespace Facehook.Exceptions.FileExceptions
+
 {
     public class FileTypeException : FileException
     {
